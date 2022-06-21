@@ -69,8 +69,8 @@ class YouTube:
 				videos_info.extend(response_videos['items'])
 			return videos_info
 		except Exception as e:
-
 			raise YouTubeException(e)
+
     def get_comment_threads(self, service, video_id, sort_by='time', sort_order='asc'):
         order = ['asc', 'desc'].index(sort_order)
         comment_threads = []
@@ -114,6 +114,17 @@ class YouTube:
 		except Exception as e:
 			print(e)
 			return 0
+
+	def channelComments(self, channel_id:str):
+		#TODO
+		response_commentThreads = yt.service.commentThreads().list(
+	    part='snippet',
+	    # videoId='SpmWlHRVn9c',
+	    allThreadsRelatedToChannelId='UCw-ppX-E9oGs2b_Mt4Rq4fQ',
+	    maxResults=100,
+	    order='time',                       # {time; relevance}
+	    textFormat='plainText'              # {plainText; html}    
+	).execute()
 
 
 class CommentThreadViewer(QWidget):
