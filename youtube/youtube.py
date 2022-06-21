@@ -1,4 +1,4 @@
-
+import re
 from .exceptions import YouTubeException, NoVideosReturned
 from .google_apis import create_service
 
@@ -9,17 +9,17 @@ class YouTube:
 	API_NAME = 'youtube'
 	API_VERSION = 'v3'
 
-	def __init__(self, client_secret_file):
+	def __init__(self, client_secret_file:str):
 		self.client_secret_file = client_secret_file
 		self.service = None
 	   
-	def initService(self, prefix=None):
+	def initService(self, prefix:str=None):
 		try:
 			self.service = create_service(self.client_secret_file, self.API_NAME, self.API_VERSION, self.SCOPES, prefix=prefix)
 		except Exception as e:
 			raise YouTubeException(e)
 
-	def getChannelVideos(self, channel_id, id_type='by id'):
+	def getChannelVideos(self, channel_id:str, id_type:str='by id'):
 		if id_type == 'by id':
 			response = self.service.channels().list(part='contentDetails,brandingSettings', id=channel_id).execute()
 		elif id_type == 'by username':
@@ -70,3 +70,18 @@ class YouTube:
 			return videos_info
 		except Exception as e:
 			raise YouTubeException(e)
+
+	@staticmethod
+	def convert_duration(duration:str):
+		"""
+		Convert duration string to seconds
+		"""
+		try:
+			h = int(re.search('\d+H', duration)[0][:-1]) * 60**2  if re.search('\d+H', duration) else 0
+			m = int(re.search('\d+M', duration)[0][:-1]) * 60  if re.search('\d+M', duration) else 0
+			s = int(re.search('\d+S', duration)[0][:-1])  if re.search('\d+S', duration) else 0
+
+			return h + m + s
+		except Exception as e:
+			print(e)
+			return 0			
