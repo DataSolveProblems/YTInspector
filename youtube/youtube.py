@@ -115,187 +115,187 @@ class YouTube:
 			print(e)
 			return 0
 
-	def channelComments(self, channel_id:str):
-		#TODO
-		response_commentThreads = yt.service.commentThreads().list(
-	    part='snippet',
-	    # videoId='SpmWlHRVn9c',
-	    allThreadsRelatedToChannelId='UCw-ppX-E9oGs2b_Mt4Rq4fQ',
-	    maxResults=100,
-	    order='time',                       # {time; relevance}
-	    textFormat='plainText'              # {plainText; html}    
-	).execute()
+	# def channelComments(self, channel_id:str):
+	# 	#TODO
+	# 	response_commentThreads = yt.service.commentThreads().list(
+	#     part='snippet',
+	#     # videoId='SpmWlHRVn9c',
+	#     allThreadsRelatedToChannelId='UCw-ppX-E9oGs2b_Mt4Rq4fQ',
+	#     maxResults=100,
+	#     order='time',                       # {time; relevance}
+	#     textFormat='plainText'              # {plainText; html}    
+	# ).execute()
 
 
-class CommentThreadViewer(QWidget):
-	def __init__(self, parent=None):
-		super().__init__()
-		self.parent = parent
+# class CommentThreadViewer(QWidget):
+# 	def __init__(self, parent=None):
+# 		super().__init__()
+# 		self.parent = parent
 	
-		layout = QVBoxLayout()
+# 		layout = QVBoxLayout()
 
-		layout_channel_info = QFormLayout()
-		layout_channel_info.setLabelAlignment(Qt.AlignRight)
-		layout.addLayout(layout_channel_info)
+# 		layout_channel_info = QFormLayout()
+# 		layout_channel_info.setLabelAlignment(Qt.AlignRight)
+# 		layout.addLayout(layout_channel_info)
 
-		self.video_id = QLineEdit()
-		layout_channel_info.addRow(QLabel('video Id:'), self.video_id)
+# 		self.video_id = QLineEdit()
+# 		layout_channel_info.addRow(QLabel('video Id:'), self.video_id)
 
-		self.video_name = QLineEdit()
-		self.video_name.setReadOnly(True)
-		layout_channel_info.addRow(QLabel('Video Name:'), self.video_name)
+# 		self.video_name = QLineEdit()
+# 		self.video_name.setReadOnly(True)
+# 		layout_channel_info.addRow(QLabel('Video Name:'), self.video_name)
 
-		self.comments = QTextBrowser ()
-		self.comments.verticalScrollBar().setMinimumWidth(500)
-		# self.comments.s
-		layout.addWidget(self.comments)
+# 		self.comments = QTextBrowser ()
+# 		self.comments.verticalScrollBar().setMinimumWidth(500)
+# 		# self.comments.s
+# 		layout.addWidget(self.comments)
 
-		button_layout = QHBoxLayout()
-		layout.addLayout(button_layout)
-		button_layout.addStretch()
+# 		button_layout = QHBoxLayout()
+# 		layout.addLayout(button_layout)
+# 		button_layout.addStretch()
 
-		self.button_retrieve = QPushButton('Retrieve')
-		self.button_retrieve.clicked.connect(self.retrieve_comments)
-		button_layout.addWidget(self.button_retrieve)
+# 		self.button_retrieve = QPushButton('Retrieve')
+# 		self.button_retrieve.clicked.connect(self.retrieve_comments)
+# 		button_layout.addWidget(self.button_retrieve)
 
-		self.button_reset = QPushButton('Reset fields')
-		self.button_reset.clicked.connect(self.reset_fields)
-		button_layout.addWidget(self.button_reset)
+# 		self.button_reset = QPushButton('Reset fields')
+# 		self.button_reset.clicked.connect(self.reset_fields)
+# 		button_layout.addWidget(self.button_reset)
 
-		self.setLayout(layout)
+# 		self.setLayout(layout)
 
-	# def wheelEvent(self, event):
-	# 	if event.modifiers() == Qt.ControlModifier :
-	# 		if event.angleDelta().y() > 0:
-	# 			fnt_size = self.comments.fontPointSize()
-	# 			print(fnt_size + 2)
-	# 			self.comments.setFontPointSize(fnt_size + 2)
-	# 		else:
-	# 			fnt_size = self.comments.fontPointSize()
-	# 			print(fnt_size - 2)				
-	# 			self.comments.setFontPointSize(fnt_size - 2)
+# 	# def wheelEvent(self, event):
+# 	# 	if event.modifiers() == Qt.ControlModifier :
+# 	# 		if event.angleDelta().y() > 0:
+# 	# 			fnt_size = self.comments.fontPointSize()
+# 	# 			print(fnt_size + 2)
+# 	# 			self.comments.setFontPointSize(fnt_size + 2)
+# 	# 		else:
+# 	# 			fnt_size = self.comments.fontPointSize()
+# 	# 			print(fnt_size - 2)				
+# 	# 			self.comments.setFontPointSize(fnt_size - 2)
 
-	def retrieve_comments(self):
-		# try:
+# 	def retrieve_comments(self):
+# 		# try:
 
-		video_id_raw = self.video_id.text().strip()
+# 		video_id_raw = self.video_id.text().strip()
 
-		# pattern = r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})'
-		# result = re.match(r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})', video_id_raw, re.IGNORECASE)
+# 		# pattern = r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})'
+# 		# result = re.match(r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})', video_id_raw, re.IGNORECASE)
 
-		# if re.match(r'(https://studio.youtube.com/video/)([^\/]{11})', video_id_raw, re.IGNORECASE):
-		# 	video_id = re.match(r'(https://studio.youtube.com/video/)([^\/]{11})', video_id_raw, re.IGNORECASE)[2]
-		# elif re.match(r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})', video_id_raw, re.IGNORECASE):
-		# 	video_id = re.match(r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})', video_id_raw, re.IGNORECASE)[1]
-		# else:
-		# 	video_id = None
+# 		# if re.match(r'(https://studio.youtube.com/video/)([^\/]{11})', video_id_raw, re.IGNORECASE):
+# 		# 	video_id = re.match(r'(https://studio.youtube.com/video/)([^\/]{11})', video_id_raw, re.IGNORECASE)[2]
+# 		# elif re.match(r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})', video_id_raw, re.IGNORECASE):
+# 		# 	video_id = re.match(r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})', video_id_raw, re.IGNORECASE)[1]
+# 		# else:
+# 		# 	video_id = None
 
-		video_id = video_id_raw
-		# if video_id.startswith("https://www.youtube.com/watch?v="):
-			# video_id = video_id.replace('https://www.youtube.com/watch?v=', '')
+# 		video_id = video_id_raw
+# 		# if video_id.startswith("https://www.youtube.com/watch?v="):
+# 			# video_id = video_id.replace('https://www.youtube.com/watch?v=', '')
 
-		if self.parent.service is None:
-			self.parent.status.setText('Please connect to YouTube')
-			return
-		elif not video_id:
-			self.parent.status.setText('Please check video Id')
-			return
+# 		if self.parent.service is None:
+# 			self.parent.status.setText('Please connect to YouTube')
+# 			return
+# 		elif not video_id:
+# 			self.parent.status.setText('Please check video Id')
+# 			return
 
-		try:
-			response_video_name = self.parent.yt.get_video_info(self.parent.service, video_id)
-		except Exception as e:
-			self.parent.status.setText(str(e))
-			return
+# 		try:
+# 			response_video_name = self.parent.yt.get_video_info(self.parent.service, video_id)
+# 		except Exception as e:
+# 			self.parent.status.setText(str(e))
+# 			return
 
-		try:
-			if response_video_name['pageInfo']['totalResults'] == 0:
-				self.parent.status.setText('No result returned')
-				return
-			else:
-				self.video_name.setText(response_video_name['items'][0]['snippet']['title'])
-		except TypeError as e:
-			if TypeError is ConnectionAbortedError:
-				self.parent.status.setText('Lost connection. Please reconnect')
-				return
-			else:
-				self.parent.status.setText(str(e))
-		except Exception as e:
-			self.parent.status.setText(str(e))
+# 		try:
+# 			if response_video_name['pageInfo']['totalResults'] == 0:
+# 				self.parent.status.setText('No result returned')
+# 				return
+# 			else:
+# 				self.video_name.setText(response_video_name['items'][0]['snippet']['title'])
+# 		except TypeError as e:
+# 			if TypeError is ConnectionAbortedError:
+# 				self.parent.status.setText('Lost connection. Please reconnect')
+# 				return
+# 			else:
+# 				self.parent.status.setText(str(e))
+# 		except Exception as e:
+# 			self.parent.status.setText(str(e))
 
-		### populate video info
-		self.comments.clear()
-		self.comments.setFontPointSize(float(self.parent.comboFontSize.currentText()))
-		try:
+# 		### populate video info
+# 		self.comments.clear()
+# 		self.comments.setFontPointSize(float(self.parent.comboFontSize.currentText()))
+# 		try:
 			
-			### populate comments
-			comment_threads = self.parent.yt.get_comment_threads(self.parent.service, video_id)
+# 			### populate comments
+# 			comment_threads = self.parent.yt.get_comment_threads(self.parent.service, video_id)
 
-			for index, comment_thread in enumerate(comment_threads):
-				published = comment_thread['snippet']['topLevelComment']['snippet']['publishedAt'][:-1].replace('T', ' ')
-				comment_text = comment_thread['snippet']['topLevelComment']['snippet']['textDisplay']
-				author_name = comment_thread['snippet']['topLevelComment']['snippet']['authorDisplayName']
+# 			for index, comment_thread in enumerate(comment_threads):
+# 				published = comment_thread['snippet']['topLevelComment']['snippet']['publishedAt'][:-1].replace('T', ' ')
+# 				comment_text = comment_thread['snippet']['topLevelComment']['snippet']['textDisplay']
+# 				author_name = comment_thread['snippet']['topLevelComment']['snippet']['authorDisplayName']
 
-				### Some users' account might got deleted but the post will remain
-				if comment_thread['snippet']['topLevelComment']['snippet'].get('authorChannelId'):
-					author_channel_id = comment_thread['snippet']['topLevelComment']['snippet']['authorChannelId']['value']
-				else:
-					author_channel_id = ''
-					author_name = 'Author Profile Removed'
+# 				### Some users' account might got deleted but the post will remain
+# 				if comment_thread['snippet']['topLevelComment']['snippet'].get('authorChannelId'):
+# 					author_channel_id = comment_thread['snippet']['topLevelComment']['snippet']['authorChannelId']['value']
+# 				else:
+# 					author_channel_id = ''
+# 					author_name = 'Author Profile Removed'
 
-				like_count = comment_thread['snippet']['topLevelComment']['snippet']['likeCount']
-				comment_thread_id = comment_thread['id']
-				self.comments.insertPlainText('Author: {0} ({1})\n'.format(author_name, author_channel_id))
-				self.comments.insertPlainText('Post Date: {0}\n'.format(published))
-				self.comments.insertPlainText('#{1} Comment: (Like Count: {0})'.format(like_count, index + 1) + '\n')
-				self.comments.insertPlainText(comment_text + '\n')
-				self.comments.insertPlainText('\n')
-				self.comments.insertPlainText('-'*90 + '\n')
+# 				like_count = comment_thread['snippet']['topLevelComment']['snippet']['likeCount']
+# 				comment_thread_id = comment_thread['id']
+# 				self.comments.insertPlainText('Author: {0} ({1})\n'.format(author_name, author_channel_id))
+# 				self.comments.insertPlainText('Post Date: {0}\n'.format(published))
+# 				self.comments.insertPlainText('#{1} Comment: (Like Count: {0})'.format(like_count, index + 1) + '\n')
+# 				self.comments.insertPlainText(comment_text + '\n')
+# 				self.comments.insertPlainText('\n')
+# 				self.comments.insertPlainText('-'*90 + '\n')
 
-				### Check if any reply
-				total_replies = comment_thread['snippet']['totalReplyCount']
-				if total_replies > 0:
-					comments = []
+# 				### Check if any reply
+# 				total_replies = comment_thread['snippet']['totalReplyCount']
+# 				if total_replies > 0:
+# 					comments = []
 
-					response = self.parent.service.comments().list(
-						part='snippet',
-						parentId=comment_thread_id,
-						maxResults=100,
-						textFormat='plainText'
-					).execute()
-					comments = response['items']
-					nextPageToken = response.get('nextPageToken')
+# 					response = self.parent.service.comments().list(
+# 						part='snippet',
+# 						parentId=comment_thread_id,
+# 						maxResults=100,
+# 						textFormat='plainText'
+# 					).execute()
+# 					comments = response['items']
+# 					nextPageToken = response.get('nextPageToken')
 
-					while nextPageToken:
-						response = self.parent.service.comments().list(
-							part='snippet',
-							parentId=comment_thread_id,
-							maxResults=100,
-							textFormat='plainText',
-							pageToken=nextPageToken
-						).execute()
-						comments.extend(response['items'])
-						nextPageToken = response.get('nextPageToken')
+# 					while nextPageToken:
+# 						response = self.parent.service.comments().list(
+# 							part='snippet',
+# 							parentId=comment_thread_id,
+# 							maxResults=100,
+# 							textFormat='plainText',
+# 							pageToken=nextPageToken
+# 						).execute()
+# 						comments.extend(response['items'])
+# 						nextPageToken = response.get('nextPageToken')
 
-					# comments = comment_thread['replies']['comments']
-					comments = sorted(comments, key=lambda x: x['snippet']['publishedAt'], reverse=False)
-					for sub_index, comment in enumerate(comments):
-						self.x = comment['snippet']
-						published = comment['snippet']['publishedAt'][:-1].replace('T', ' ')
-						comment_text = comment['snippet']['textDisplay']
-						author_name = comment['snippet']['authorDisplayName']
-						author_channel_id = comment['snippet']['authorChannelId']['value']
-						like_count = comment['snippet']['likeCount']
+# 					# comments = comment_thread['replies']['comments']
+# 					comments = sorted(comments, key=lambda x: x['snippet']['publishedAt'], reverse=False)
+# 					for sub_index, comment in enumerate(comments):
+# 						self.x = comment['snippet']
+# 						published = comment['snippet']['publishedAt'][:-1].replace('T', ' ')
+# 						comment_text = comment['snippet']['textDisplay']
+# 						author_name = comment['snippet']['authorDisplayName']
+# 						author_channel_id = comment['snippet']['authorChannelId']['value']
+# 						like_count = comment['snippet']['likeCount']
 
-						self.comments.insertPlainText('Reply #{0}-{1}\n'.format(index + 1, sub_index + 1))
-						self.comments.insertPlainText('-'*90 + '\n')
-						self.comments.insertPlainText('Author: {0} ({1})\n'.format(author_name, author_channel_id))
-						self.comments.insertPlainText('Post Date: {0}\n'.format(published))
-						self.comments.insertPlainText('#{1}-{2} Comment: (Like Count: {0})'.format(like_count, index + 1, sub_index + 1) + '\n')
-						self.comments.insertPlainText(comment_text + '\n')
-						self.comments.insertPlainText('\n')
-						self.comments.insertPlainText('-'*90 + '\n')
+# 						self.comments.insertPlainText('Reply #{0}-{1}\n'.format(index + 1, sub_index + 1))
+# 						self.comments.insertPlainText('-'*90 + '\n')
+# 						self.comments.insertPlainText('Author: {0} ({1})\n'.format(author_name, author_channel_id))
+# 						self.comments.insertPlainText('Post Date: {0}\n'.format(published))
+# 						self.comments.insertPlainText('#{1}-{2} Comment: (Like Count: {0})'.format(like_count, index + 1, sub_index + 1) + '\n')
+# 						self.comments.insertPlainText(comment_text + '\n')
+# 						self.comments.insertPlainText('\n')
+# 						self.comments.insertPlainText('-'*90 + '\n')
 
-				self.parent.status.clear()
-		except Exception as e:
-			print(str(e))
-			self.parent.status.setText(str(e))
+# 				self.parent.status.clear()
+# 		except Exception as e:
+# 			print(str(e))
+# 			self.parent.status.setText(str(e))
