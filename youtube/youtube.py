@@ -71,34 +71,34 @@ class YouTube:
 		except Exception as e:
 			raise YouTubeException(e)
 
-    def get_comment_threads(self, service, video_id, sort_by='time', sort_order='asc'):
-        order = ['asc', 'desc'].index(sort_order)
-        comment_threads = []
+    # def get_comment_threads(self, service, video_id, sort_by='time', sort_order='asc'):
+    #     order = ['asc', 'desc'].index(sort_order)
+    #     comment_threads = []
 
-        response = service.commentThreads().list(
-            part='snippet,replies',
-            videoId=video_id,
-            maxResults=100,
-            order=sort_by,  # time | relevance
-            textFormat='plainText'  # plainText | html
-        ).execute()
-        comment_threads = response['items']
-        nextPageToken = response.get('nextPageToken')
+    #     response = service.commentThreads().list(
+    #         part='snippet,replies',
+    #         videoId=video_id,
+    #         maxResults=100,
+    #         order=sort_by,  # time | relevance
+    #         textFormat='plainText'  # plainText | html
+    #     ).execute()
+    #     comment_threads = response['items']
+    #     nextPageToken = response.get('nextPageToken')
 
-        while nextPageToken:
-            response = service.commentThreads().list(
-                part='snippet,replies',
-                videoId=video_id,
-                maxResults=100,
-                order=sort_by,  # time | relevance
-                textFormat='plainText',  # plainText | html
-                pageToken=nextPageToken
-            ).execute()
+    #     while nextPageToken:
+    #         response = service.commentThreads().list(
+    #             part='snippet,replies',
+    #             videoId=video_id,
+    #             maxResults=100,
+    #             order=sort_by,  # time | relevance
+    #             textFormat='plainText',  # plainText | html
+    #             pageToken=nextPageToken
+    #         ).execute()
 
-            comment_threads.extend(response['items'])
-            nextPageToken = response.get('nextPageToken')
-        comment_threads = sorted(comment_threads, key=lambda x: x['snippet']['topLevelComment']['snippet']['publishedAt'], reverse=order)            
-        return comment_threads
+    #         comment_threads.extend(response['items'])
+    #         nextPageToken = response.get('nextPageToken')
+    #     comment_threads = sorted(comment_threads, key=lambda x: x['snippet']['topLevelComment']['snippet']['publishedAt'], reverse=order)            
+    #     return comment_threads
 
 	@staticmethod
 	def convert_duration(duration:str):
