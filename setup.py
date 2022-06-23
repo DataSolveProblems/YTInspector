@@ -18,5 +18,6 @@ setup(
     python_requires='>=3.6',
     install_requires=['google-auth>=1.12.0', 'google-auth-oauthlib>=0.4.1', 'google-api-python-client>=2.41.0',
                       'google-api-python-client>=2.41.0'],
+    packages=['ytinsepctor'],
     license='MIT'
 )    
