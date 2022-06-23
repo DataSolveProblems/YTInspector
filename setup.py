@@ -10,7 +10,6 @@ except ImportError:
 
 setup(
     name='youtube',
-    packages=['youtube'],
     author='Jie Jenn',
     author_email='jiejenn@learndataanalysis.org',
     version='1.0.1',
