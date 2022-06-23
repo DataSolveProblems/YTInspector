@@ -10,7 +10,7 @@ class YouTube:
 	API_NAME = 'youtube'
 	API_VERSION = 'v3'
 
-	def __init__(self, client_secret_file:str):
+	def __init__(self, client_secret_file):
 		self.client_secret_file = client_secret_file
 		self.service = None
 	   
@@ -20,7 +20,7 @@ class YouTube:
 		except Exception as e:
 			raise YouTubeException(e)
 
-	def retrieveChannelVideos(self, channel_id:str, id_type:str='by id'):
+	def retrieveChannelVideos(self, channel_id, id_type='by id'):
 		if id_type == 'by id':
 			response = self.service.channels().list(part='contentDetails,brandingSettings', id=channel_id).execute()
 		elif id_type == 'by username':
