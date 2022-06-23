@@ -9,7 +9,7 @@ except ImportError:
     from distutils.core import setup
 
 setup(
-    name='youtube',
+    name='ytinsepctor',
     author='Jie Jenn',
     author_email='jiejenn@learndataanalysis.org',
     version='1.0.1',
