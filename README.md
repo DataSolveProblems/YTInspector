@@ -41,7 +41,7 @@ yt.initService()
 video_results = yt.searchVideos('tesla')
 ```
 
-### 2. Serach video by release date range
+### 2. Serach videos by release date range
 
 ```python
 from ytinspector import YouTube, convert_to_RFC_datetime
