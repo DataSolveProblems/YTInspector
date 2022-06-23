@@ -97,3 +97,59 @@ yt.initService()
 
 playlist_list = yt.searchPlaylists('electrical cars')
 ```
+
+### 6. Retrieve channel uploaded videos
+
+```python
+from ytinspector import YouTube
+
+CLIENT_FILE = 'client-secret.json'
+
+yt = YouTube(CLIENT_FILE)
+yt.initService()
+
+channel_videos = yt.retrieveChannelVideos('UCVhDYDVo3AqyMIKtMLSrcEg')
+```
+
+### 7. Retrieve video comments (comment threads only)
+
+```python
+from ytinspector import YouTube
+
+CLIENT_FILE = 'client-secret.json'
+
+yt = YouTube(CLIENT_FILE)
+yt.initService()
+
+video_comments = yt.retrieveVideoComments('bcNUbQ2CBHM')
+```
+
+### 8. Retrieve video comments (include replies)
+
+```python
+from ytinspector import YouTube
+
+CLIENT_FILE = 'client-secret.json'
+
+yt = YouTube(CLIENT_FILE)
+yt.initService()
+
+video_comments = yt.retrieveVideoComments('bcNUbQ2CBHM', include_replies=True)
+```
+
+### 9. Retrieve channel latest comments
+
+```python
+from ytinspector import YouTube
+
+CLIENT_FILE = 'client-secret.json'
+
+yt = YouTube(CLIENT_FILE)
+yt.initService()
+
+latest_comments = yt.retrieveChannelRelatedComments('UCVhDYDVo3AqyMIKtMLSrcEg')
+```
+
+## Reference
+- [YouTube Data API Reference](https://developers.google.com/youtube/v3/docs)
+- [Set up credentials](https://developers.google.com/youtube/v3/guides/auth/client-side-web-apps)
