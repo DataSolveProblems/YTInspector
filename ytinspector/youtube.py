@@ -1,6 +1,12 @@
 import re
-from .exceptions import YouTubeException, NoVideosReturned
+from collections import namedtuple
+from .exceptions import YouTubeException, NoVideosReturned, NoCommentsReturned
 from .google_apis import create_service
+
+video_comment = namedtuple('VideoComment', 
+	['comment_thread_id', 'comment_text', 'commenter_name', 'commenter_channel', 'like_count', 'published_timestamp', 'updated_timestamp', 'reply_count', 'replies'])
+video_reply = namedtuple('VideoCommentReply', 
+	['comment_reply_id', 'comment_thread_id', 'reply_text', 'reply_commenter_name','reply_commenter_channel', 'like_count', 'published_timestamp', 'updated_timestamp' ])
 
 class YouTube:
 	SCOPES = ['https://www.googleapis.com/auth/youtube', 
@@ -30,14 +36,12 @@ class YouTube:
 
 		playlist_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
 		part_string = 'contentDetails'
-
 		try:
 			response = self.service.playlistItems().list(
 					part=part_string,
 					playlistId=playlist_id,
 					maxResults=50
 				).execute()
-
 			playlistItems = response['items']
 			nextPageToken = response.get('nextPageToken')
 
@@ -48,7 +52,6 @@ class YouTube:
 					maxResults=50,
 					pageToken=nextPageToken
 				).execute()
-
 				playlistItems.extend(response['items'])
 				nextPageToken = response.get('nextPageToken')
 				print('Token {0}'.format(nextPageToken))
@@ -57,48 +60,128 @@ class YouTube:
 			videos_info = []
 
 			for batch_num in range(0, len(videos), 50):
-				video_batch = videos[batch_num: batch_num + 50]
-				
+				video_batch = videos[batch_num: batch_num + 50]				
 				# maxium 50 videos per request
 				response_videos = self.service.videos().list(
 					id=','.join(list(map(lambda x:x['videoId'], video_batch))),
 					part='snippet,contentDetails,statistics',
 					maxResults=50
 				).execute()
-
 				videos_info.extend(response_videos['items'])
 			return videos_info
 		except Exception as e:
 			raise YouTubeException(e)
 
-    # def get_comment_threads(self, service, video_id, sort_by='time', sort_order='asc'):
-    #     order = ['asc', 'desc'].index(sort_order)
-    #     comment_threads = []
+	def retrieveVideoComments(self, video_id, order_by='time', output_type='plainText', search_keyword=None, include_replies=False):
+		"""
+		Retrieve video comments. Limiting to 3,000 comments cap to avoid exceeding daily usage quota.
+		:param video_id
+		:param ordder_by: {time; relevance}
+		:param output_format: {plainText; html}
+		:param include_replies: {True; False}
+		"""
+		def getCommentReply(service, comment_thread_id, output_format='plainText'):
+			comment_replies = [] 
+			comment_replies_items = []
+			response_comment_repleis = service.comments().list(
+				part='snippet',
+				parentId=comment_thread_id,
+				maxResults=100,
+				textFormat=output_format
+			).execute()
 
-    #     response = service.commentThreads().list(
-    #         part='snippet,replies',
-    #         videoId=video_id,
-    #         maxResults=100,
-    #         order=sort_by,  # time | relevance
-    #         textFormat='plainText'  # plainText | html
-    #     ).execute()
-    #     comment_threads = response['items']
-    #     nextPageToken = response.get('nextPageToken')
+			comment_replies_items.extend(response_comment_repleis.get('items'))
+			nextPageToken = response_comment_repleis.get('nextPageToken')
 
-    #     while nextPageToken:
-    #         response = service.commentThreads().list(
-    #             part='snippet,replies',
-    #             videoId=video_id,
-    #             maxResults=100,
-    #             order=sort_by,  # time | relevance
-    #             textFormat='plainText',  # plainText | html
-    #             pageToken=nextPageToken
-    #         ).execute()
+			while nextPageToken:
+				response_comment_repleis = service.comments().list(
+					part='snippet',
+					parentId=comment_thread_id,
+					maxResults=100,
+					textFormat=output_format,
+					pageToken=nextPageToken
+				).execute()
 
-    #         comment_threads.extend(response['items'])
-    #         nextPageToken = response.get('nextPageToken')
-    #     comment_threads = sorted(comment_threads, key=lambda x: x['snippet']['topLevelComment']['snippet']['publishedAt'], reverse=order)            
-    #     return comment_threads
+				comment_replies_items.extend(response_comment_repleis.get('items'))
+				nextPageToken = response_comment_repleis.get('nextPageToken')     
+
+			for comment_replies_item in comment_replies_items:
+				comment_replies.append(video_reply(
+					comment_replies_item['id'],
+					comment_thread_id,
+					comment_replies_item['snippet']['textDisplay'],
+					comment_replies_item['snippet']['authorDisplayName'],
+					comment_replies_item['snippet']['authorChannelUrl'],
+					comment_replies_item['snippet']['likeCount'],
+					comment_replies_item['snippet']['publishedAt'],
+					comment_replies_item['snippet']['updatedAt']
+				))
+			return comment_replies
+
+		comment_thread_count = 0
+		comment_threads = []
+		comment_threads_items = []
+		response_commentThreads = self.service.commentThreads().list(
+			part='snippet',
+			videoId=video_id,
+			maxResults=100,
+			order=order_by,
+			textFormat=output_type,
+			searchTerms=search_keyword
+		).execute()
+
+		if response_commentThreads['pageInfo']['totalResults'] == 0:
+			raise NoCommentsReturned("Video has no comment")
+
+		comment_threads_items.extend(response_commentThreads['items'])
+		nextPageToken = response_commentThreads.get('nextPageToken')
+		comment_thread_count += len(response_commentThreads['items'])
+
+		while nextPageToken:
+			if 3000 > comment_thread_count:
+				response_commentThreads = self.service.commentThreads().list(
+					part='snippet',
+					videoId=video_id,
+					maxResults=100,
+					order=order_by,                      
+					textFormat=output_type,
+					pageToken=nextPageToken,
+					searchTerms=search_keyword
+				).execute()   
+				comment_threads_items.extend(response_commentThreads['items'])
+				nextPageToken = response_commentThreads.get('nextPageToken')
+				print('Token {0}'.format(nextPageToken))
+				comment_thread_count += len(response_commentThreads['items'])
+			else:
+				nextPageToken = None
+
+		if include_replies:
+			for comment_threads_item in comment_threads_items:
+				comment_threads.append(video_comment(
+					comment_threads_item['snippet']['topLevelComment']['id'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['textDisplay'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['authorDisplayName'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['authorChannelUrl'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['likeCount'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['publishedAt'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['updatedAt'], 
+					comment_threads_item['snippet']['totalReplyCount'],
+					getCommentReply(self.service, comment_threads_item['snippet']['topLevelComment']['id'], output_type)
+				))
+		else:
+			for comment_threads_item in comment_threads_items:
+				comment_threads.append(video_comment(
+					comment_threads_item['snippet']['topLevelComment']['id'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['textDisplay'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['authorDisplayName'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['authorChannelUrl'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['likeCount'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['publishedAt'],
+					comment_threads_item['snippet']['topLevelComment']['snippet']['updatedAt'], 
+					comment_threads_item['snippet']['totalReplyCount'],
+					[]
+				))			
+		return comment_threads
 
 	@staticmethod
 	def convert_duration(duration:str):
@@ -114,188 +197,3 @@ class YouTube:
 		except Exception as e:
 			print(e)
 			return 0
-
-	# def channelComments(self, channel_id:str):
-	# 	#TODO
-	# 	response_commentThreads = yt.service.commentThreads().list(
-	#     part='snippet',
-	#     # videoId='SpmWlHRVn9c',
-	#     allThreadsRelatedToChannelId='UCw-ppX-E9oGs2b_Mt4Rq4fQ',
-	#     maxResults=100,
-	#     order='time',                       # {time; relevance}
-	#     textFormat='plainText'              # {plainText; html}    
-	# ).execute()
-
-
-# class CommentThreadViewer(QWidget):
-# 	def __init__(self, parent=None):
-# 		super().__init__()
-# 		self.parent = parent
-	
-# 		layout = QVBoxLayout()
-
-# 		layout_channel_info = QFormLayout()
-# 		layout_channel_info.setLabelAlignment(Qt.AlignRight)
-# 		layout.addLayout(layout_channel_info)
-
-# 		self.video_id = QLineEdit()
-# 		layout_channel_info.addRow(QLabel('video Id:'), self.video_id)
-
-# 		self.video_name = QLineEdit()
-# 		self.video_name.setReadOnly(True)
-# 		layout_channel_info.addRow(QLabel('Video Name:'), self.video_name)
-
-# 		self.comments = QTextBrowser ()
-# 		self.comments.verticalScrollBar().setMinimumWidth(500)
-# 		# self.comments.s
-# 		layout.addWidget(self.comments)
-
-# 		button_layout = QHBoxLayout()
-# 		layout.addLayout(button_layout)
-# 		button_layout.addStretch()
-
-# 		self.button_retrieve = QPushButton('Retrieve')
-# 		self.button_retrieve.clicked.connect(self.retrieve_comments)
-# 		button_layout.addWidget(self.button_retrieve)
-
-# 		self.button_reset = QPushButton('Reset fields')
-# 		self.button_reset.clicked.connect(self.reset_fields)
-# 		button_layout.addWidget(self.button_reset)
-
-# 		self.setLayout(layout)
-
-# 	# def wheelEvent(self, event):
-# 	# 	if event.modifiers() == Qt.ControlModifier :
-# 	# 		if event.angleDelta().y() > 0:
-# 	# 			fnt_size = self.comments.fontPointSize()
-# 	# 			print(fnt_size + 2)
-# 	# 			self.comments.setFontPointSize(fnt_size + 2)
-# 	# 		else:
-# 	# 			fnt_size = self.comments.fontPointSize()
-# 	# 			print(fnt_size - 2)				
-# 	# 			self.comments.setFontPointSize(fnt_size - 2)
-
-# 	def retrieve_comments(self):
-# 		# try:
-
-# 		video_id_raw = self.video_id.text().strip()
-
-# 		# pattern = r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})'
-# 		# result = re.match(r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})', video_id_raw, re.IGNORECASE)
-
-# 		# if re.match(r'(https://studio.youtube.com/video/)([^\/]{11})', video_id_raw, re.IGNORECASE):
-# 		# 	video_id = re.match(r'(https://studio.youtube.com/video/)([^\/]{11})', video_id_raw, re.IGNORECASE)[2]
-# 		# elif re.match(r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})', video_id_raw, re.IGNORECASE):
-# 		# 	video_id = re.match(r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})', video_id_raw, re.IGNORECASE)[1]
-# 		# else:
-# 		# 	video_id = None
-
-# 		video_id = video_id_raw
-# 		# if video_id.startswith("https://www.youtube.com/watch?v="):
-# 			# video_id = video_id.replace('https://www.youtube.com/watch?v=', '')
-
-# 		if self.parent.service is None:
-# 			self.parent.status.setText('Please connect to YouTube')
-# 			return
-# 		elif not video_id:
-# 			self.parent.status.setText('Please check video Id')
-# 			return
-
-# 		try:
-# 			response_video_name = self.parent.yt.get_video_info(self.parent.service, video_id)
-# 		except Exception as e:
-# 			self.parent.status.setText(str(e))
-# 			return
-
-# 		try:
-# 			if response_video_name['pageInfo']['totalResults'] == 0:
-# 				self.parent.status.setText('No result returned')
-# 				return
-# 			else:
-# 				self.video_name.setText(response_video_name['items'][0]['snippet']['title'])
-# 		except TypeError as e:
-# 			if TypeError is ConnectionAbortedError:
-# 				self.parent.status.setText('Lost connection. Please reconnect')
-# 				return
-# 			else:
-# 				self.parent.status.setText(str(e))
-# 		except Exception as e:
-# 			self.parent.status.setText(str(e))
-
-# 		### populate video info
-# 		self.comments.clear()
-# 		self.comments.setFontPointSize(float(self.parent.comboFontSize.currentText()))
-# 		try:
-			
-# 			### populate comments
-# 			comment_threads = self.parent.yt.get_comment_threads(self.parent.service, video_id)
-
-# 			for index, comment_thread in enumerate(comment_threads):
-# 				published = comment_thread['snippet']['topLevelComment']['snippet']['publishedAt'][:-1].replace('T', ' ')
-# 				comment_text = comment_thread['snippet']['topLevelComment']['snippet']['textDisplay']
-# 				author_name = comment_thread['snippet']['topLevelComment']['snippet']['authorDisplayName']
-
-# 				### Some users' account might got deleted but the post will remain
-# 				if comment_thread['snippet']['topLevelComment']['snippet'].get('authorChannelId'):
-# 					author_channel_id = comment_thread['snippet']['topLevelComment']['snippet']['authorChannelId']['value']
-# 				else:
-# 					author_channel_id = ''
-# 					author_name = 'Author Profile Removed'
-
-# 				like_count = comment_thread['snippet']['topLevelComment']['snippet']['likeCount']
-# 				comment_thread_id = comment_thread['id']
-# 				self.comments.insertPlainText('Author: {0} ({1})\n'.format(author_name, author_channel_id))
-# 				self.comments.insertPlainText('Post Date: {0}\n'.format(published))
-# 				self.comments.insertPlainText('#{1} Comment: (Like Count: {0})'.format(like_count, index + 1) + '\n')
-# 				self.comments.insertPlainText(comment_text + '\n')
-# 				self.comments.insertPlainText('\n')
-# 				self.comments.insertPlainText('-'*90 + '\n')
-
-# 				### Check if any reply
-# 				total_replies = comment_thread['snippet']['totalReplyCount']
-# 				if total_replies > 0:
-# 					comments = []
-
-# 					response = self.parent.service.comments().list(
-# 						part='snippet',
-# 						parentId=comment_thread_id,
-# 						maxResults=100,
-# 						textFormat='plainText'
-# 					).execute()
-# 					comments = response['items']
-# 					nextPageToken = response.get('nextPageToken')
-
-# 					while nextPageToken:
-# 						response = self.parent.service.comments().list(
-# 							part='snippet',
-# 							parentId=comment_thread_id,
-# 							maxResults=100,
-# 							textFormat='plainText',
-# 							pageToken=nextPageToken
-# 						).execute()
-# 						comments.extend(response['items'])
-# 						nextPageToken = response.get('nextPageToken')
-
-# 					# comments = comment_thread['replies']['comments']
-# 					comments = sorted(comments, key=lambda x: x['snippet']['publishedAt'], reverse=False)
-# 					for sub_index, comment in enumerate(comments):
-# 						self.x = comment['snippet']
-# 						published = comment['snippet']['publishedAt'][:-1].replace('T', ' ')
-# 						comment_text = comment['snippet']['textDisplay']
-# 						author_name = comment['snippet']['authorDisplayName']
-# 						author_channel_id = comment['snippet']['authorChannelId']['value']
-# 						like_count = comment['snippet']['likeCount']
-
-# 						self.comments.insertPlainText('Reply #{0}-{1}\n'.format(index + 1, sub_index + 1))
-# 						self.comments.insertPlainText('-'*90 + '\n')
-# 						self.comments.insertPlainText('Author: {0} ({1})\n'.format(author_name, author_channel_id))
-# 						self.comments.insertPlainText('Post Date: {0}\n'.format(published))
-# 						self.comments.insertPlainText('#{1}-{2} Comment: (Like Count: {0})'.format(like_count, index + 1, sub_index + 1) + '\n')
-# 						self.comments.insertPlainText(comment_text + '\n')
-# 						self.comments.insertPlainText('\n')
-# 						self.comments.insertPlainText('-'*90 + '\n')
-
-# 				self.parent.status.clear()
-# 		except Exception as e:
-# 			print(str(e))
-# 			self.parent.status.setText(str(e))
