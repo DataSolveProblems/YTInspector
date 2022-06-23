@@ -4,3 +4,9 @@ class YouTubeException(Exception):
 
 class NoVideosReturned(YouTubeException):
 	""""""
+
+class NoCommentsReturned(YouTubeException):
+	""""""
+
+class SearchResultReturnsNone(YouTubeException):
+	""""""
