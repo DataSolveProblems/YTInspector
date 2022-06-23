@@ -483,7 +483,7 @@ class YouTube:
 				channel_item['snippet']['description'],
 				channel_item['snippet']['publishedAt'],
 				region_code,
-				channel_item['snippet']['thumbnails']['dafault']['url'],
+				channel_item['snippet']['thumbnails']['default']['url'],
 				'https://www.youtube.com/channel/{0}'.format(channel_item['snippet']['channelId'])
 			))
 		return channels
@@ -569,7 +569,6 @@ class YouTube:
 			h = int(re.search('\d+H', duration)[0][:-1]) * 60**2  if re.search('\d+H', duration) else 0
 			m = int(re.search('\d+M', duration)[0][:-1]) * 60  if re.search('\d+M', duration) else 0
 			s = int(re.search('\d+S', duration)[0][:-1])  if re.search('\d+S', duration) else 0
-
 			return h + m + s
 		except Exception as e:
 			print(e)
