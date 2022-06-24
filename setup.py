@@ -12,7 +12,7 @@ setup(
     name='ytinspector',
     author='Jie Jenn',
     author_email='jiejenn@learndataanalysis.org',
-    version='1.0.1',
+    version='1.0.2',
     keywords=['YouTube', 'YouTube Scraper'],
     python_requires='>=3.6',
     install_requires=['google-auth>=1.12.0', 'google-auth-oauthlib>=0.4.1', 'google-api-python-client>=2.41.0',
