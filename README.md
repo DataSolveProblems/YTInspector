@@ -150,6 +150,15 @@ yt.initService()
 latest_comments = yt.retrieveChannelRelatedComments('UCVhDYDVo3AqyMIKtMLSrcEg')
 ```
 
+### 10. Extract channel id
+```python
+from ytinspector import locate_channel_id
+
+video_id = 't49Q6qhMfk8'
+channel_id = locate_channel_id(video_id)
+print(channel_id)
+```
+
 ## Reference
 - [YouTube Data API Reference](https://developers.google.com/youtube/v3/docs)
 - [Set up credentials](https://developers.google.com/youtube/v3/guides/auth/client-side-web-apps)
