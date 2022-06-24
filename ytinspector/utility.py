@@ -1,4 +1,5 @@
 import re
+import requests
 from collections import namedtuple
 
 ChannelRelatedComment = namedtuple('VideoComment', 
