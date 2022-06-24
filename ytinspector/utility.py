@@ -40,8 +40,10 @@ def convert_duration(duration):
 def locate_channel_id(video_id):
     """returns channel url and channel id"""
     response = requests.get('https://www.youtube.com/watch?v={0}'.format(video_id))
-    results = re.search('http://www.youtube.com/channel/(\w+)', response.text, re.MULTILINE)
+    results = re.search(r'\"playlistId\":\"(\w+(-)\w+)', response.text, re.MULTILINE)
     if results:
-        return results.group(0), results.group(1)
+        return results.group(1)[4:]
     else:
         return
+
+        
