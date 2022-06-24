@@ -1,7 +1,7 @@
-import re
 from .exceptions import YouTubeException, NoVideosReturned, NoCommentsReturned, SearchResultReturnsNone
 from .google_apis import create_service, convert_to_RFC_datetime
 from ytinspector.utility import (ChannelRelatedComment, VideoComment, VideoReply, SearchResultsChannel, SearchResultsVideo, SearchResultsPlaylist)
+from ytinspector.utility import (convert_duration)
 
 class YouTube:
 	SCOPES = ['https://www.googleapis.com/auth/youtube', 
@@ -560,15 +560,3 @@ class YouTube:
 			))
 		return playlists	
 
-def convert_duration(duration):
-	"""
-	Convert duration string to seconds
-	"""
-	try:
-		h = int(re.search('\d+H', duration)[0][:-1]) * 60**2  if re.search('\d+H', duration) else 0
-		m = int(re.search('\d+M', duration)[0][:-1]) * 60  if re.search('\d+M', duration) else 0
-		s = int(re.search('\d+S', duration)[0][:-1])  if re.search('\d+S', duration) else 0
-		return h + m + s
-	except Exception as e:
-		print(e)
-		return 0
