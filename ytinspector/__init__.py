@@ -1,6 +1,5 @@
 
 from .exceptions import (YouTubeException, NoVideosReturned, NoCommentsReturned, SearchResultReturnsNone)
-from .youtube import YouTube
 from .google_apis import create_service, convert_to_RFC_datetime
 from .utility import convert_duration, locate_channel_id
 
