@@ -21,14 +21,16 @@ Requirements: Python 3.6+.
 
 2. [Create a project, set up OAuth2 protocol, and download client file.](https://youtu.be/PKLG5pfs4nY)
 
-3. Start using YTInspector:
+3. Enable YouTube Data API.
+
+4. Start using YTInspector:
 
 ## Examples
 
 ### 1. Search videos
 
 ```python
-from ytinspector import YouTube
+from ytinspector.youtube import YouTube
 
 CLIENT_FILE = 'client-secret.json'
 
@@ -44,7 +46,8 @@ video_results = yt.searchVideos('tesla')
 ### 2. Serach videos by release date range
 
 ```python
-from ytinspector import YouTube, convert_to_RFC_datetime
+from ytinspector import convert_to_RFC_datetime
+from ytinspector.youtube import YouTube
 
 CLIENT_FILE = 'client-secret.json'
 
@@ -62,7 +65,7 @@ video_results = yt.searchVideos(
 ### 3. List video categories
 
 ```python
-from ytinspector import YouTube
+from ytinspector.youtube import YouTube
 
 CLIENT_FILE = 'client-secret.json'
 
@@ -75,7 +78,7 @@ categories = yt.retrieveVideoCategoriesList()
 ### 4. Search channels
 
 ```python
-from ytinspector import YouTube
+from ytinspector.youtube import YouTube
 
 CLIENT_FILE = 'client-secret.json'
 
@@ -88,7 +91,7 @@ channel_list = yt.searchChannels('electrical cars')
 ### 5. Search playlists
 
 ```python
-from ytinspector import YouTube
+from ytinspector.youtube import YouTube
 
 CLIENT_FILE = 'client-secret.json'
 
@@ -101,7 +104,7 @@ playlist_list = yt.searchPlaylists('electrical cars')
 ### 6. Retrieve channel uploaded videos
 
 ```python
-from ytinspector import YouTube
+from ytinspector.youtube import YouTube
 
 CLIENT_FILE = 'client-secret.json'
 
@@ -114,7 +117,7 @@ channel_videos = yt.retrieveChannelVideos('UCVhDYDVo3AqyMIKtMLSrcEg')
 ### 7. Retrieve video comments (comment threads only)
 
 ```python
-from ytinspector import YouTube
+from ytinspector.youtube import YouTube
 
 CLIENT_FILE = 'client-secret.json'
 
@@ -127,7 +130,7 @@ video_comments = yt.retrieveVideoComments('bcNUbQ2CBHM')
 ### 8. Retrieve video comments (include replies)
 
 ```python
-from ytinspector import YouTube
+from ytinspector.youtube import YouTube
 
 CLIENT_FILE = 'client-secret.json'
 
@@ -140,7 +143,7 @@ video_comments = yt.retrieveVideoComments('bcNUbQ2CBHM', include_replies=True)
 ### 9. Retrieve channel latest comments
 
 ```python
-from ytinspector import YouTube
+from ytinspector.youtube import YouTube
 
 CLIENT_FILE = 'client-secret.json'
 
@@ -156,7 +159,7 @@ from ytinspector import locate_channel_id
 
 video_id = 't49Q6qhMfk8'
 channel_id = locate_channel_id(video_id)
-print(channel_id)
+print(channel_id)                                
 ```
 
 ## Reference
