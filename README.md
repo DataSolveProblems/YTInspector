@@ -25,7 +25,7 @@ Requirements: Python 3.6+.
 
 4. Start using YTInspector:
 
-## Examples
+## Examples (YouTube)
 
 ### 1. Search videos
 
@@ -43,7 +43,7 @@ yt.initService()
 video_results = yt.searchVideos('tesla')
 ```
 
-### 2. Serach videos by release date range
+### 2. Serach videos by uploaded date range
 
 ```python
 from ytinspector import convert_to_RFC_datetime
@@ -160,6 +160,66 @@ from ytinspector import locate_channel_id
 video_id = 't49Q6qhMfk8'
 channel_id = locate_channel_id(video_id)
 print(channel_id)                                
+```
+
+## Examples (YouTube Data Analytics)
+
+#### 1. Run report query
+*Using the query method, you should be able to run any report that the API supports*
+**below query is equalvant to top 200 playlists by views**
+
+```python
+response = yt_analytics.query(
+	start_date='2017-01-01', 
+	end_date='2022-05-31',
+	metric_list=['playlistStarts', 'estimatedMinutesWatched', 'views', 'viewsPerPlaylistStart'],
+	dimension_list=['playlist'],
+	sort_by='-views',
+	max_result=200,
+	filters='isCurated==1'
+)
+df = pd.DataFrame(response[1], columns=response[0])
+print(df)
+```
+
+### 2. Channel Sumamry Report
+
+```python
+response = yt_analytics.channelSummary('2022-01-01', '2022-05-31')
+df = pd.DataFrame(response[1], columns=response[0])
+print(df)
+```
+
+### 3. Summary by country
+
+```python
+response = yt_analytics.summaryByCountry('2022-01-01', '2022-05-31', country_code='au', is_yt_partner=True)
+df = pd.DataFrame(response[1], columns=response[0])
+print(df)
+```
+
+### 4. Top 200 videos
+
+```python
+response = yt_analytics.top200Videos('2022-01-01', '2022-05-31', sortby_field='subscribersGained', is_yt_partner=True)
+df = pd.DataFrame(response[1], columns=response[0])
+print(df)
+```
+
+### 5. PlaylistSummary
+
+```python
+response = yt_analytics.playlistSummary('2022-01-01', '2022-05-31', playlist_id=None)
+df = pd.DataFrame(response[1], columns=response[0])
+print(df)
+```
+
+### 6. Top 200 playlists
+
+```python
+response = yt_analytics.top200Playlists('2022-01-01', '2022-05-31', sortby_field='estimatedMinutesWatched')
+df = pd.DataFrame(response[1], columns=response[0])
+print(df)
 ```
 
 ## Reference
