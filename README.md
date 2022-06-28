@@ -164,6 +164,18 @@ print(channel_id)
 
 ## Examples (YouTube Data Analytics)
 
+### Initialize YouTube Data Analytics Service
+
+```python
+CLIENT_FILE = 'client-secret.json'
+
+yt = YouTube(CLIENT_FILE)
+yt.initService()
+
+yt_analytics = YTAnalytics(CLIENT_FILE)
+yt_analytics.initService()
+```
+
 #### 1. Run report query
 *Using the query method, you should be able to run any report that the API supports*
 **below query is equalvant to top 200 playlists by views**
