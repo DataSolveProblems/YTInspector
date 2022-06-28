@@ -177,7 +177,7 @@ yt_analytics.initService()
 ```
 
 #### 1. Run report query
-*Using the query method, you should be able to run any report that the API supports*
+*Using the query method, you should be able to run any report that the API supports*  
 **below query is equalvant to top 200 playlists by views**
 
 ```python
