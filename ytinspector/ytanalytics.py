@@ -142,7 +142,7 @@ class YTAnalytics:
 				metrics=metrics,
 				dimensions=dimensions,
 				filters=filters,
-				maxResults=max_result,
+				maxResults=max_results,
 				startIndex=start_index,
 				sort=sort_by
 			).execute()
