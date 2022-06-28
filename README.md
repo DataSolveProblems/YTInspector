@@ -8,6 +8,8 @@ A lightweight Python library to simplify querying YouTube stuff (videos, comment
 - Search video comments (including replies) by keywords.
 - Pull channel latest comments.
 - Pull channel upload videos infos.
+- Query YouTube Analytics Data
+- Pre-built reports
 
 ## Installation
 
