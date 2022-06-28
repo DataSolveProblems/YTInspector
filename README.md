@@ -2,6 +2,8 @@
 
 A lightweight Python library to simplify querying YouTube stuff (videos, comments, channels, playlists).
 
+<a href="https://www.buymeacoffee.com/jiejenn" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
 **Features**:
 
 - Search videos, channels, playlists with additional filters.
