@@ -21,7 +21,7 @@ Requirements: Python 3.6+.
 
 2. [Create a project, set up OAuth2 protocol, and download client file.](https://youtu.be/PKLG5pfs4nY)
 
-3. Enable YouTube Data API.
+3. Enable YouTube Data and YouTube Analytics APIs.
 
 4. Start using YTInspector:
 
